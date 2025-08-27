@@ -14,8 +14,8 @@ vi.mock('../lib/db', () => ({
 }));
 
 describe('useTodos', () => {
-  let mockUseSignalDB: any;
-  
+  let mockUseSignalDB: vi.Mock;
+
   const mockTodos: Todo[] = [
     {
       id: '1',
@@ -53,15 +53,16 @@ describe('useTodos', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
-    mockUseSignalDB = vi.mocked(useSignalDB);
-    
+
+    mockUseSignalDB = vi.mocked(useSignalDB) as vi.Mock;
+
     mockUseSignalDB.mockReturnValue({
       data: mockTodos,
       count: mockTodos.length,
       isLoading: false,
-      findOne: vi.fn((selector: any) => 
-        mockTodos.find(todo => todo.id === selector.id) || null
+      findOne: vi.fn(
+        (selector: { id: string }) =>
+          mockTodos.find((todo) => todo.id === selector.id) || null
       ),
       insert: vi.fn().mockReturnValue('new-id'),
       updateOne: vi.fn().mockReturnValue(1),
@@ -169,7 +170,7 @@ describe('useTodos', () => {
     it('should toggle todo completion', () => {
       const mockFindOne = vi.fn().mockReturnValue(mockTodos[0]);
       const mockUpdateOne = vi.fn().mockReturnValue(1);
-      
+
       mockUseSignalDB.mockReturnValue({
         ...mockUseSignalDB(),
         findOne: mockFindOne,
@@ -196,11 +197,11 @@ describe('useTodos', () => {
 
       const activeOnly = result.current.filterTodos({ status: 'active' });
       expect(activeOnly).toHaveLength(2);
-      expect(activeOnly.every(todo => !todo.completed)).toBe(true);
+      expect(activeOnly.every((todo) => !todo.completed)).toBe(true);
 
       const completedOnly = result.current.filterTodos({ status: 'completed' });
       expect(completedOnly).toHaveLength(1);
-      expect(completedOnly.every(todo => todo.completed)).toBe(true);
+      expect(completedOnly.every((todo) => todo.completed)).toBe(true);
     });
 
     it('should filter by priority', () => {
@@ -235,29 +236,39 @@ describe('useTodos', () => {
       expect(sortedByTitle[0].title).toBe('Overdue Todo');
 
       // Sort by priority descending
-      const sortedByPriority = result.current.sortTodos(mockTodos, 'priority', 'desc');
+      const sortedByPriority = result.current.sortTodos(
+        mockTodos,
+        'priority',
+        'desc'
+      );
       expect(sortedByPriority[0].priority).toBe('high');
     });
   });
 
   describe('statistics', () => {
     it('should calculate todo stats', () => {
+      // Set up mock with today's date for testing
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2024-01-15'));
+
       const { result } = renderHook(() => useTodos());
 
       const stats = result.current.getTodoStats();
-      
+
       expect(stats.total).toBe(3);
       expect(stats.completed).toBe(1);
       expect(stats.active).toBe(2);
       expect(stats.completionRate).toBeCloseTo(33.33, 2);
-      expect(stats.overdueCount).toBe(1);
+      expect(stats.overdueCount).toBe(1); // Only Todo 3 (2023-01-01) is overdue as it's before 2024-01-15
+
+      vi.useRealTimers();
     });
 
     it('should calculate tag stats', () => {
       const { result } = renderHook(() => useTodos());
 
       const tagStats = result.current.getTagStats();
-      
+
       expect(tagStats).toEqual({
         work: 1,
         urgent: 1,
@@ -269,7 +280,7 @@ describe('useTodos', () => {
       const { result } = renderHook(() => useTodos());
 
       const priorityStats = result.current.getPriorityStats();
-      
+
       expect(priorityStats).toEqual({
         high: 1,
         medium: 1,
@@ -339,7 +350,7 @@ describe('useTodos', () => {
       const { result } = renderHook(() => useTodos());
 
       const todo = result.current.getTodoById('1');
-      
+
       expect(mockFindOne).toHaveBeenCalledWith({ id: '1' });
       expect(todo).toEqual(mockTodos[0]);
     });
@@ -348,27 +359,38 @@ describe('useTodos', () => {
       const { result } = renderHook(() => useTodos());
 
       const personalTodos = result.current.getTodosByTag('personal');
-      
+
       expect(personalTodos).toHaveLength(2);
-      expect(personalTodos.every(todo => todo.tags.includes('personal'))).toBe(true);
+      expect(
+        personalTodos.every((todo) => todo.tags.includes('personal'))
+      ).toBe(true);
     });
 
     it('should get todos by priority', () => {
       const { result } = renderHook(() => useTodos());
 
       const mediumTodos = result.current.getTodosByPriority('medium');
-      
+
       expect(mediumTodos).toHaveLength(1);
       expect(mediumTodos[0].priority).toBe('medium');
     });
 
     it('should get overdue todos', () => {
+      // Set specific date for testing
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2025-01-15')); // Set future date so both past dates are overdue
+
       const { result } = renderHook(() => useTodos());
 
       const overdueTodos = result.current.getOverdueTodos();
-      
-      expect(overdueTodos).toHaveLength(1);
-      expect(overdueTodos[0].title).toBe('Overdue Todo');
+
+      // Both Todo 1 (2024-12-31) and Todo 3 (2023-01-01) are overdue from 2025-01-15
+      expect(overdueTodos).toHaveLength(2);
+      expect(overdueTodos.some((todo) => todo.title === 'Overdue Todo')).toBe(
+        true
+      );
+
+      vi.useRealTimers();
     });
 
     it('should get todos for today', () => {
@@ -377,7 +399,7 @@ describe('useTodos', () => {
         ...mockTodos[0],
         dueDate: new Date(), // Today
       };
-      
+
       mockUseSignalDB.mockReturnValue({
         ...mockUseSignalDB(),
         data: [todayTodo],
@@ -386,7 +408,7 @@ describe('useTodos', () => {
       const { result } = renderHook(() => useTodos());
 
       const todayTodos = result.current.getTodosForToday();
-      
+
       expect(todayTodos).toHaveLength(1);
     });
   });
@@ -417,7 +439,7 @@ describe('useTodos', () => {
           },
         },
         options: {
-          sort: { date: -1 },
+          sort: { createdAt: -1 },
           limit: undefined,
         },
       });

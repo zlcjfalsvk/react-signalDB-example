@@ -14,7 +14,7 @@ function VerySimpleApp() {
   return (
     <div className="p-8 max-w-2xl mx-auto">
       <h1 className="text-3xl font-bold mb-8">Simple Todo App (No SignalDB)</h1>
-      
+
       <div className="flex gap-2 mb-6">
         <input
           type="text"

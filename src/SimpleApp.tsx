@@ -37,28 +37,33 @@ function SimpleApp() {
       };
       todosCollection.insert(newTodo);
       setTitle('');
-      setRefreshKey(prev => prev + 1);
+      setRefreshKey((prev) => prev + 1);
     }
   };
 
   const toggleTodo = (id: string) => {
     const todo = todosCollection.findOne({ id });
     if (todo) {
-      todosCollection.updateOne({ id }, { $set: { completed: !todo.completed } });
-      setRefreshKey(prev => prev + 1);
+      todosCollection.updateOne(
+        { id },
+        { $set: { completed: !todo.completed } }
+      );
+      setRefreshKey((prev) => prev + 1);
     }
   };
 
   const deleteTodo = (id: string) => {
     todosCollection.removeOne({ id });
-    setRefreshKey(prev => prev + 1);
+    setRefreshKey((prev) => prev + 1);
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">SignalDB Todo App</h1>
-        
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">
+          SignalDB Todo App
+        </h1>
+
         {/* Add Todo Form */}
         <form onSubmit={handleSubmit} className="mb-6">
           <div className="flex gap-2">
@@ -81,7 +86,9 @@ function SimpleApp() {
         {/* Todo List */}
         <div className="bg-white rounded-lg shadow">
           {todos.length === 0 ? (
-            <p className="p-8 text-center text-gray-500">No todos yet. Add one above!</p>
+            <p className="p-8 text-center text-gray-500">
+              No todos yet. Add one above!
+            </p>
           ) : (
             <ul className="divide-y divide-gray-200">
               {todos.map((todo) => (
@@ -94,7 +101,9 @@ function SimpleApp() {
                   />
                   <span
                     className={`flex-1 ${
-                      todo.completed ? 'line-through text-gray-400' : 'text-gray-800'
+                      todo.completed
+                        ? 'line-through text-gray-400'
+                        : 'text-gray-800'
                     }`}
                   >
                     {todo.title}
@@ -113,7 +122,9 @@ function SimpleApp() {
 
         {/* Stats */}
         <div className="mt-4 text-sm text-gray-600 text-center">
-          Total: {todos.length} | Completed: {todos.filter(t => t.completed).length} | Active: {todos.filter(t => !t.completed).length}
+          Total: {todos.length} | Completed:{' '}
+          {todos.filter((t) => t.completed).length} | Active:{' '}
+          {todos.filter((t) => !t.completed).length}
         </div>
       </div>
     </div>

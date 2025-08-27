@@ -21,7 +21,14 @@ interface StatCardProps {
   };
 }
 
-function StatCard({ title, value, icon, color, description, trend }: StatCardProps) {
+function StatCard({
+  title,
+  value,
+  icon,
+  color,
+  description,
+  trend,
+}: StatCardProps) {
   return (
     <div className={`${color} rounded-lg p-4 shadow-sm`}>
       <div className="flex items-center justify-between">
@@ -35,9 +42,11 @@ function StatCard({ title, value, icon, color, description, trend }: StatCardPro
         <div className="text-3xl opacity-50">{icon}</div>
       </div>
       {trend && (
-        <div className={`flex items-center mt-2 text-xs ${
-          trend.isPositive ? 'text-green-600' : 'text-red-600'
-        }`}>
+        <div
+          className={`flex items-center mt-2 text-xs ${
+            trend.isPositive ? 'text-green-600' : 'text-red-600'
+          }`}
+        >
           <span>{trend.isPositive ? '↑' : '↓'}</span>
           <span className="ml-1">{Math.abs(trend.value)}%</span>
           <span className="ml-1 opacity-75">from last week</span>
@@ -55,15 +64,22 @@ interface ProgressBarProps {
   showPercentage?: boolean;
 }
 
-function ProgressBar({ label, value, max, color, showPercentage = true }: ProgressBarProps) {
+function ProgressBar({
+  label,
+  value,
+  max,
+  color,
+  showPercentage = true,
+}: ProgressBarProps) {
   const percentage = max > 0 ? (value / max) * 100 : 0;
-  
+
   return (
     <div className="space-y-1">
       <div className="flex justify-between text-sm">
         <span className="font-medium">{label}</span>
         <span className="text-gray-600">
-          {value}{showPercentage && max > 0 && ` (${percentage.toFixed(1)}%)`}
+          {value}
+          {showPercentage && max > 0 && ` (${percentage.toFixed(1)}%)`}
         </span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2">
@@ -84,7 +100,7 @@ interface DonutChartProps {
 
 function DonutChart({ data, size = 120, thickness = 12 }: DonutChartProps) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
-  
+
   if (total === 0) {
     return (
       <div
@@ -133,7 +149,7 @@ function DonutChart({ data, size = 120, thickness = 12 }: DonutChartProps) {
           );
         })}
       </svg>
-      
+
       {/* Center content */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
@@ -160,11 +176,14 @@ export function TodoStats({
   }, [stats.completionRate]);
 
   // Prepare priority chart data
-  const priorityChartData = useMemo(() => [
-    { label: 'High', value: priorityStats.high, color: '#dc2626' },
-    { label: 'Medium', value: priorityStats.medium, color: '#d97706' },
-    { label: 'Low', value: priorityStats.low, color: '#059669' },
-  ], [priorityStats]);
+  const priorityChartData = useMemo(
+    () => [
+      { label: 'High', value: priorityStats.high, color: '#dc2626' },
+      { label: 'Medium', value: priorityStats.medium, color: '#d97706' },
+      { label: 'Low', value: priorityStats.low, color: '#059669' },
+    ],
+    [priorityStats]
+  );
 
   // Get top tags
   const topTags = useMemo(() => {
@@ -178,15 +197,21 @@ export function TodoStats({
       <div className="bg-white border rounded-lg p-4 shadow-sm">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {stats.total}
+            </div>
             <div className="text-xs text-gray-500">Total</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {stats.completed}
+            </div>
             <div className="text-xs text-gray-500">Completed</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-orange-600">{stats.active}</div>
+            <div className="text-2xl font-bold text-orange-600">
+              {stats.active}
+            </div>
             <div className="text-xs text-gray-500">Active</div>
           </div>
           <div className="text-center">
@@ -211,7 +236,7 @@ export function TodoStats({
           color="bg-blue-50 border border-blue-200 text-blue-900"
           description="All todos created"
         />
-        
+
         <StatCard
           title="Completed"
           value={stats.completed}
@@ -219,7 +244,7 @@ export function TodoStats({
           color="bg-green-50 border border-green-200 text-green-900"
           description={`${stats.completionRate.toFixed(1)}% completion rate`}
         />
-        
+
         <StatCard
           title="Active"
           value={stats.active}
@@ -227,7 +252,7 @@ export function TodoStats({
           color="bg-orange-50 border border-orange-200 text-orange-900"
           description="Pending todos"
         />
-        
+
         <StatCard
           title="Added Today"
           value={stats.todayAdded}
@@ -244,7 +269,8 @@ export function TodoStats({
             <span className="text-2xl">⚠️</span>
             <div>
               <p className="font-medium text-red-900">
-                {stats.overdueCount} overdue todo{stats.overdueCount > 1 ? 's' : ''}
+                {stats.overdueCount} overdue todo
+                {stats.overdueCount > 1 ? 's' : ''}
               </p>
               <p className="text-sm text-red-700">
                 Some todos have passed their due date and need attention
@@ -259,7 +285,9 @@ export function TodoStats({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Priority Distribution */}
           <div className="bg-white border rounded-lg p-6 shadow-sm">
-            <h3 className="font-semibold text-gray-900 mb-4">Priority Distribution</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">
+              Priority Distribution
+            </h3>
             <div className="flex items-center justify-between">
               <div className="space-y-3 flex-1">
                 <ProgressBar
@@ -291,15 +319,19 @@ export function TodoStats({
 
           {/* Completion Progress */}
           <div className="bg-white border rounded-lg p-6 shadow-sm">
-            <h3 className="font-semibold text-gray-900 mb-4">Completion Progress</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">
+              Completion Progress
+            </h3>
             <div className="space-y-4">
               {/* Overall progress */}
               <div className="text-center">
                 <div className={`text-4xl font-bold ${completionColor}`}>
                   {stats.completionRate.toFixed(1)}%
                 </div>
-                <div className="text-sm text-gray-500 mb-4">Overall completion</div>
-                
+                <div className="text-sm text-gray-500 mb-4">
+                  Overall completion
+                </div>
+
                 <div className="w-full bg-gray-200 rounded-full h-3">
                   <div
                     className="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-500"
@@ -344,7 +376,7 @@ export function TodoStats({
               />
             ))}
           </div>
-          
+
           {Object.keys(tagStats).length > 5 && (
             <p className="text-xs text-gray-500 mt-3">
               And {Object.keys(tagStats).length - 5} more tags...
@@ -355,7 +387,9 @@ export function TodoStats({
 
       {/* Productivity Insights */}
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">💡 Productivity Insights</h3>
+        <h3 className="font-semibold text-gray-900 mb-4">
+          💡 Productivity Insights
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <h4 className="font-medium text-gray-700 mb-2">Today's Activity</h4>
@@ -363,18 +397,21 @@ export function TodoStats({
               <li>• {stats.todayAdded} new todos added</li>
               <li>• {stats.completionRate.toFixed(1)}% completion rate</li>
               {stats.overdueCount > 0 && (
-                <li className="text-red-600">• {stats.overdueCount} overdue items</li>
+                <li className="text-red-600">
+                  • {stats.overdueCount} overdue items
+                </li>
               )}
             </ul>
           </div>
-          
+
           <div>
             <h4 className="font-medium text-gray-700 mb-2">Recommendations</h4>
             <ul className="space-y-1 text-gray-600">
               {stats.completionRate < 50 && (
                 <li>• Focus on completing existing todos</li>
               )}
-              {priorityStats.high > priorityStats.medium + priorityStats.low && (
+              {priorityStats.high >
+                priorityStats.medium + priorityStats.low && (
                 <li>• Consider breaking down high-priority tasks</li>
               )}
               {stats.overdueCount > 0 && (

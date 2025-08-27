@@ -57,7 +57,7 @@ describe('SignalDB Collection', () => {
     });
 
     // Wait for reactivity to trigger
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     expect(changeCount).toBeGreaterThan(0);
     unsubscribe();
@@ -77,8 +77,14 @@ describe('SignalDB Collection', () => {
     todosCollection.insert(todo);
 
     // Perform concurrent updates
-    const update1 = todosCollection.updateOne({ id: '1' }, { $set: { completed: true } });
-    const update2 = todosCollection.updateOne({ id: '1' }, { $set: { priority: 'high' } });
+    const update1 = todosCollection.updateOne(
+      { id: '1' },
+      { $set: { completed: true } }
+    );
+    const update2 = todosCollection.updateOne(
+      { id: '1' },
+      { $set: { priority: 'high' } }
+    );
 
     await Promise.all([update1, update2]);
 

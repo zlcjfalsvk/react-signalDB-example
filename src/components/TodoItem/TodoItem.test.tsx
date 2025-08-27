@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TodoItem } from './TodoItem';
@@ -74,8 +74,9 @@ describe('TodoItem', () => {
   it('should display due date correctly', () => {
     render(<TodoItem todo={mockTodo} {...mockHandlers} />);
 
-    // The due date should be displayed in the format MM/DD/YYYY or similar
-    expect(screen.getByText(/12\/31\/2024/)).toBeInTheDocument();
+    // The due date is formatted using toLocaleDateString()
+    const formattedDate = new Date('2024-12-31').toLocaleDateString();
+    expect(screen.getByText(`📅 ${formattedDate}`)).toBeInTheDocument();
   });
 
   it('should show overdue indicator for past due dates', () => {
@@ -96,13 +97,13 @@ describe('TodoItem', () => {
     };
     render(<TodoItem todo={todayTodo} {...mockHandlers} />);
 
-    expect(screen.getByText(/📅 Due today/)).toBeInTheDocument();
+    expect(screen.getByText('📅 Due today')).toBeInTheDocument();
   });
 
   it('should not show due date when not set', () => {
     const todoWithoutDueDate = { ...mockTodo };
     delete todoWithoutDueDate.dueDate;
-    
+
     render(<TodoItem todo={todoWithoutDueDate} {...mockHandlers} />);
 
     expect(screen.queryByText(/📅/)).not.toBeInTheDocument();
@@ -110,7 +111,9 @@ describe('TodoItem', () => {
 
   it('should show action buttons on hover', async () => {
     const user = userEvent.setup();
-    const { container } = render(<TodoItem todo={mockTodo} {...mockHandlers} />);
+    const { container } = render(
+      <TodoItem todo={mockTodo} {...mockHandlers} />
+    );
 
     const todoItem = container.firstChild as HTMLElement;
     await user.hover(todoItem);
@@ -240,7 +243,9 @@ describe('TodoItem', () => {
     await user.click(deleteButton);
 
     // Should show confirmation state
-    expect(screen.getByTitle(/click again to confirm delete/i)).toBeInTheDocument();
+    expect(
+      screen.getByTitle(/click again to confirm delete/i)
+    ).toBeInTheDocument();
     expect(mockHandlers.onDelete).not.toHaveBeenCalled();
   });
 
@@ -249,10 +254,10 @@ describe('TodoItem', () => {
     render(<TodoItem todo={mockTodo} {...mockHandlers} isSelected={true} />);
 
     const deleteButton = screen.getByTitle(/delete todo/i);
-    
+
     // First click - show confirmation
     await user.click(deleteButton);
-    
+
     // Second click - actually delete
     const confirmButton = screen.getByTitle(/click again to confirm delete/i);
     await user.click(confirmButton);
@@ -273,8 +278,10 @@ describe('TodoItem', () => {
   it('should show selected state styling', () => {
     render(<TodoItem todo={mockTodo} {...mockHandlers} isSelected={true} />);
 
-    const todoElement = screen.getByText('Test Todo').closest('div');
-    expect(todoElement).toHaveClass('border-blue-500');
+    // The main container div has the border styling
+    const todoElement = screen.getByRole('checkbox').closest('div')
+      ?.parentElement?.parentElement;
+    expect(todoElement).toHaveClass('border-blue-500', 'shadow-md');
   });
 
   it('should not show updated timestamp when same as created', () => {

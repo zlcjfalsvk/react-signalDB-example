@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TodoList } from './TodoList';
@@ -72,7 +72,9 @@ describe('TodoList', () => {
   });
 
   it('should show empty message when no todos', () => {
-    render(<TodoList todos={[]} {...mockHandlers} emptyMessage="No tasks found" />);
+    render(
+      <TodoList todos={[]} {...mockHandlers} emptyMessage="No tasks found" />
+    );
 
     expect(screen.getByText('No tasks found')).toBeInTheDocument();
     expect(screen.getByText('📝')).toBeInTheDocument();
@@ -105,11 +107,11 @@ describe('TodoList', () => {
   it('should toggle sort direction when sort button is clicked', async () => {
     const user = userEvent.setup();
     render(
-      <TodoList 
-        todos={mockTodos} 
-        {...mockHandlers} 
-        sortBy="date" 
-        sortDirection="desc" 
+      <TodoList
+        todos={mockTodos}
+        {...mockHandlers}
+        sortBy="date"
+        sortDirection="desc"
       />
     );
 
@@ -120,14 +122,18 @@ describe('TodoList', () => {
   });
 
   it('should show bulk actions when enabled', () => {
-    render(<TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />);
+    render(
+      <TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />
+    );
 
     expect(screen.getByText('Select')).toBeInTheDocument();
   });
 
   it('should enable selection mode when select button is clicked', async () => {
     const user = userEvent.setup();
-    render(<TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />);
+    render(
+      <TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />
+    );
 
     const selectButton = screen.getByText('Select');
     await user.click(selectButton);
@@ -139,7 +145,9 @@ describe('TodoList', () => {
 
   it('should select all todos when Select All is clicked', async () => {
     const user = userEvent.setup();
-    render(<TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />);
+    render(
+      <TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />
+    );
 
     // Enter selection mode
     await user.click(screen.getByText('Select'));
@@ -153,7 +161,9 @@ describe('TodoList', () => {
 
   it('should show bulk action buttons when items are selected', async () => {
     const user = userEvent.setup();
-    render(<TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />);
+    render(
+      <TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />
+    );
 
     // Enter selection mode and select all
     await user.click(screen.getByText('Select'));
@@ -166,7 +176,9 @@ describe('TodoList', () => {
 
   it('should call onBulkToggle when Complete button is clicked', async () => {
     const user = userEvent.setup();
-    render(<TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />);
+    render(
+      <TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />
+    );
 
     // Enter selection mode and select all
     await user.click(screen.getByText('Select'));
@@ -175,12 +187,17 @@ describe('TodoList', () => {
     // Click Complete
     await user.click(screen.getByText('Complete'));
 
-    expect(mockHandlers.onBulkToggle).toHaveBeenCalledWith(['1', '2', '3'], true);
+    expect(mockHandlers.onBulkToggle).toHaveBeenCalledWith(
+      ['1', '2', '3'],
+      true
+    );
   });
 
   it('should call onBulkToggle when Activate button is clicked', async () => {
     const user = userEvent.setup();
-    render(<TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />);
+    render(
+      <TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />
+    );
 
     // Enter selection mode and select all
     await user.click(screen.getByText('Select'));
@@ -189,12 +206,17 @@ describe('TodoList', () => {
     // Click Activate
     await user.click(screen.getByText('Activate'));
 
-    expect(mockHandlers.onBulkToggle).toHaveBeenCalledWith(['1', '2', '3'], false);
+    expect(mockHandlers.onBulkToggle).toHaveBeenCalledWith(
+      ['1', '2', '3'],
+      false
+    );
   });
 
   it('should call onBulkDelete when Delete button is clicked', async () => {
     const user = userEvent.setup();
-    render(<TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />);
+    render(
+      <TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />
+    );
 
     // Enter selection mode and select all
     await user.click(screen.getByText('Select'));
@@ -208,7 +230,9 @@ describe('TodoList', () => {
 
   it('should cancel selection mode when Cancel is clicked', async () => {
     const user = userEvent.setup();
-    render(<TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />);
+    render(
+      <TodoList todos={mockTodos} {...mockHandlers} showBulkActions={true} />
+    );
 
     // Enter selection mode
     await user.click(screen.getByText('Select'));
@@ -231,10 +255,10 @@ describe('TodoList', () => {
     }));
 
     render(
-      <TodoList 
-        todos={manyTodos} 
-        {...mockHandlers} 
-        enableVirtualization={true} 
+      <TodoList
+        todos={manyTodos}
+        {...mockHandlers}
+        enableVirtualization={true}
       />
     );
 
@@ -254,10 +278,10 @@ describe('TodoList', () => {
     }));
 
     render(
-      <TodoList 
-        todos={manyTodos} 
-        {...mockHandlers} 
-        enableVirtualization={true} 
+      <TodoList
+        todos={manyTodos}
+        {...mockHandlers}
+        enableVirtualization={true}
       />
     );
 
@@ -268,10 +292,10 @@ describe('TodoList', () => {
 
   it('should disable virtualization for small lists', () => {
     render(
-      <TodoList 
-        todos={mockTodos} 
-        {...mockHandlers} 
-        enableVirtualization={true} 
+      <TodoList
+        todos={mockTodos}
+        {...mockHandlers}
+        enableVirtualization={true}
       />
     );
 
@@ -302,11 +326,7 @@ describe('TodoList', () => {
 
   it('should show correct sort direction indicator', () => {
     render(
-      <TodoList 
-        todos={mockTodos} 
-        {...mockHandlers} 
-        sortDirection="asc" 
-      />
+      <TodoList todos={mockTodos} {...mockHandlers} sortDirection="asc" />
     );
 
     expect(screen.getByTitle(/sort descending/i)).toBeInTheDocument();
@@ -314,6 +334,7 @@ describe('TodoList', () => {
   });
 
   it('should not show sort controls when onSort is not provided', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { onSort, ...handlersWithoutSort } = mockHandlers;
     render(<TodoList todos={mockTodos} {...handlersWithoutSort} />);
 
@@ -323,11 +344,7 @@ describe('TodoList', () => {
 
   it('should not show bulk actions when showBulkActions is false', () => {
     render(
-      <TodoList 
-        todos={mockTodos} 
-        {...mockHandlers} 
-        showBulkActions={false} 
-      />
+      <TodoList todos={mockTodos} {...mockHandlers} showBulkActions={false} />
     );
 
     expect(screen.queryByText('Select')).not.toBeInTheDocument();

@@ -34,7 +34,7 @@ export function initializeDatabase() {
       // Initial setup - no migration needed
       console.log('Initializing SignalDB for the first time');
     }
-    
+
     // Update version
     localStorage.setItem(STORAGE_VERSION_KEY, CURRENT_VERSION.toString());
   }

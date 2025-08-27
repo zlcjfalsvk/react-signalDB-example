@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -25,10 +26,13 @@ describe('Todo App E2E', () => {
       const dueDateInput = screen.getByLabelText(/due date/i);
 
       await user.type(titleInput, 'Complete E2E Testing');
-      await user.type(descriptionInput, 'Write comprehensive E2E tests for the Todo app');
+      await user.type(
+        descriptionInput,
+        'Write comprehensive E2E tests for the Todo app'
+      );
       await user.selectOptions(prioritySelect, 'high');
       await user.type(tagsInput, 'testing, important, development');
-      
+
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       const dateString = tomorrow.toISOString().split('T')[0];
@@ -44,7 +48,9 @@ describe('Todo App E2E', () => {
       });
 
       // Find the todo item
-      const todoItem = screen.getByText('Complete E2E Testing').closest('[role="article"]');
+      const todoItem = screen
+        .getByText('Complete E2E Testing')
+        .closest('[role="article"]');
       expect(todoItem).toBeInTheDocument();
 
       // Verify todo details
@@ -90,11 +96,14 @@ describe('Todo App E2E', () => {
         await user.click(addButton);
 
         await user.type(screen.getByLabelText(/title/i), todo.title);
-        await user.selectOptions(screen.getByLabelText(/priority/i), todo.priority);
+        await user.selectOptions(
+          screen.getByLabelText(/priority/i),
+          todo.priority
+        );
         await user.type(screen.getByLabelText(/tags/i), todo.tags);
-        
+
         await user.click(screen.getByRole('button', { name: /add todo/i }));
-        
+
         await waitFor(() => {
           expect(screen.getByText(todo.title)).toBeInTheDocument();
         });
@@ -179,10 +188,10 @@ describe('Todo App E2E', () => {
       for (let i = 1; i <= 3; i++) {
         const addButton = screen.getByText('Add Todo');
         await user.click(addButton);
-        
+
         await user.type(screen.getByLabelText(/title/i), `Todo ${i}`);
         await user.click(screen.getByRole('button', { name: /add todo/i }));
-        
+
         await waitFor(() => {
           expect(screen.getByText(`Todo ${i}`)).toBeInTheDocument();
         });
@@ -194,7 +203,7 @@ describe('Todo App E2E', () => {
 
       await waitFor(() => {
         const checkboxes = screen.getAllByRole('checkbox');
-        checkboxes.forEach(checkbox => {
+        checkboxes.forEach((checkbox) => {
           expect(checkbox).toBeChecked();
         });
       });
@@ -222,7 +231,10 @@ describe('Todo App E2E', () => {
       await user.click(addButton);
 
       await user.type(screen.getByLabelText(/title/i), 'Persistent Todo');
-      await user.type(screen.getByLabelText(/description/i), 'This should persist');
+      await user.type(
+        screen.getByLabelText(/description/i),
+        'This should persist'
+      );
       await user.click(screen.getByRole('button', { name: /add todo/i }));
 
       await waitFor(() => {
@@ -262,7 +274,7 @@ describe('Todo App E2E', () => {
 
       // Directly populate localStorage to speed up test
       localStorage.setItem('todos', JSON.stringify(todos));
-      
+
       // Remount to load from localStorage
       const { rerender } = render(<App />);
       rerender(<App />);
@@ -295,7 +307,7 @@ describe('Todo App E2E', () => {
 
       // Add a todo using keyboard only
       await user.tab(); // Focus on first interactive element
-      
+
       // Navigate to Add Todo button
       const addButton = screen.getByText('Add Todo');
       addButton.focus();
@@ -304,16 +316,19 @@ describe('Todo App E2E', () => {
       // Tab through form fields
       await user.tab(); // Title
       await user.type(screen.getByLabelText(/title/i), 'Keyboard Todo');
-      
+
       await user.tab(); // Description
-      await user.type(screen.getByLabelText(/description/i), 'Added via keyboard');
-      
+      await user.type(
+        screen.getByLabelText(/description/i),
+        'Added via keyboard'
+      );
+
       await user.tab(); // Priority
       await user.keyboard('{ArrowDown}'); // Select medium
-      
+
       await user.tab(); // Tags
       await user.type(screen.getByLabelText(/tags/i), 'accessibility');
-      
+
       await user.tab(); // Due date
       await user.tab(); // Submit button
       await user.keyboard('{Enter}');

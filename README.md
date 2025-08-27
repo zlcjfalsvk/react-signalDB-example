@@ -5,6 +5,7 @@ A modern, feature-rich Todo application built with React, TypeScript, and [Signa
 ## 🚀 Features
 
 ### Core Functionality
+
 - ✅ **Full CRUD Operations** - Create, read, update, and delete todos with ease
 - 📝 **Rich Todo Items** - Support for title, description, priority, tags, and due dates
 - 🔄 **Real-time Updates** - Reactive UI updates powered by [SignalDB](https://signaldb.js.org)
@@ -12,6 +13,7 @@ A modern, feature-rich Todo application built with React, TypeScript, and [Signa
 - 🎯 **Smart Validation** - Comprehensive form validation with helpful error messages
 
 ### Advanced Features
+
 - 🔍 **Advanced Search & Filter** - Search by title, description, or tags
 - 📊 **Rich Statistics** - Track completion rates, priority distribution, and productivity
 - 🏷️ **Tag Management** - Organize todos with multiple tags
@@ -20,6 +22,7 @@ A modern, feature-rich Todo application built with React, TypeScript, and [Signa
 - 📱 **Fully Responsive** - Works seamlessly on mobile, tablet, and desktop
 
 ### User Experience
+
 - 🎨 **Modern UI** - Clean, intuitive interface with Tailwind CSS
 - 🌙 **Accessibility** - ARIA labels, keyboard navigation, and screen reader support
 - ⚡ **Instant Actions** - Quick toggles, inline editing, and bulk operations
@@ -128,6 +131,7 @@ src/
 ### Statistics View
 
 Click "Stats" to view:
+
 - Total, completed, and active todo counts
 - Completion percentage with visual progress bar
 - Priority distribution chart
@@ -140,18 +144,21 @@ Click "Stats" to view:
 The application includes comprehensive test coverage:
 
 ### Unit Tests
+
 - Component rendering and interactions
 - Hook functionality
 - Utility functions
 - SignalDB operations
 
 ### Integration Tests
+
 - Complete user workflows
 - Data persistence
 - State management
 - Component communication
 
 ### E2E Tests
+
 - Full application workflows
 - Search and filter operations
 - Bulk actions
@@ -159,6 +166,7 @@ The application includes comprehensive test coverage:
 - Performance with large datasets
 
 Run tests with:
+
 ```bash
 npm run test           # Run all tests
 npm run test:ui        # Interactive test UI
@@ -169,21 +177,27 @@ npm run test:e2e       # End-to-end tests
 ## 🎨 Customization
 
 ### Styling
+
 The app uses Tailwind CSS with custom component classes. Modify `src/index.css` to customize:
+
 - Color schemes
 - Component styles
 - Animations
 - Responsive breakpoints
 
 ### Database Configuration
+
 SignalDB settings can be modified in `src/lib/db.ts`:
+
 - Collection indexes
 - Storage adapters
 - Migration logic
 - Performance optimizations
 
 ### Validation Rules
+
 Customize validation in `src/utils/validators.ts`:
+
 - Field requirements
 - Length limits
 - Pattern matching
@@ -212,6 +226,7 @@ MIT License - feel free to use this project for any purpose.
 ## 🤝 Contributing
 
 Contributions are welcome! Please:
+
 1. Fork the repository
 2. Create a feature branch
 3. Add tests for new features
@@ -227,6 +242,7 @@ Contributions are welcome! Please:
 ## 📮 Support
 
 For issues, questions, or suggestions:
+
 - Open an issue on GitHub
 - Check existing issues for solutions
 - Provide reproduction steps for bugs

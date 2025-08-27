@@ -92,7 +92,7 @@ describe('dateHelpers', () => {
     it('should set time to start of day', () => {
       const date = new Date('2024-01-15T14:30:45.123');
       const result = startOfDay(date);
-      
+
       expect(result.getHours()).toBe(0);
       expect(result.getMinutes()).toBe(0);
       expect(result.getSeconds()).toBe(0);
@@ -105,7 +105,7 @@ describe('dateHelpers', () => {
     it('should set time to end of day', () => {
       const date = new Date('2024-01-15T14:30:45.123');
       const result = endOfDay(date);
-      
+
       expect(result.getHours()).toBe(23);
       expect(result.getMinutes()).toBe(59);
       expect(result.getSeconds()).toBe(59);
@@ -118,7 +118,7 @@ describe('dateHelpers', () => {
     it('should add positive days correctly', () => {
       const date = new Date('2024-01-15');
       const result = addDays(date, 5);
-      
+
       expect(result.getDate()).toBe(20);
       expect(result.getMonth()).toBe(0);
     });
@@ -126,7 +126,7 @@ describe('dateHelpers', () => {
     it('should subtract negative days correctly', () => {
       const date = new Date('2024-01-15');
       const result = addDays(date, -5);
-      
+
       expect(result.getDate()).toBe(10);
       expect(result.getMonth()).toBe(0);
     });
@@ -134,7 +134,7 @@ describe('dateHelpers', () => {
     it('should handle month boundaries', () => {
       const date = new Date('2024-01-30');
       const result = addDays(date, 5);
-      
+
       expect(result.getDate()).toBe(4);
       expect(result.getMonth()).toBe(1); // February
     });

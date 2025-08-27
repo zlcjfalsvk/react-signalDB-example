@@ -1,24 +1,26 @@
 SignalDB React Todo 앱 - 전체 구현 프롬프트
 🎯 Claude Code 전체 구현 요청
-markdown빈 디렉토리에서 시작하여 SignalDB를 사용한 완전한 React Todo 앱을 구현해주세요. 
+markdown빈 디렉토리에서 시작하여 SignalDB를 사용한 완전한 React Todo 앱을 구현해주세요.
 프로젝트 초기화부터 테스트 코드 작성까지 모든 과정을 수행해주세요.
 
 ## 📋 전체 구현 요구사항
 
 ### 1. 프로젝트 초기화
+
 - npm init부터 시작
 - Vite + React + TypeScript 환경 구성
 - 필요한 모든 의존성 설치
 - 프로젝트 구조 설정
 
 ### 2. 필수 패키지 설치
+
 ```bash
 # 핵심 패키지
 - react, react-dom
 - typescript
 - vite
 - @signaldb/core
-- @signaldb/react  
+- @signaldb/react
 - @signaldb/localstorage
 
 # 스타일링
@@ -359,3 +361,4 @@ E2E 테스트 작성
 
 모든 코드는 TypeScript로 작성하고, 완전히 동작하는 애플리케이션을 만들어주세요.
 테스트는 모두 통과해야 하며, 90% 이상의 코드 커버리지를 목표로 해주세요.
+```

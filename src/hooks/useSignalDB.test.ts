@@ -20,8 +20,8 @@ interface TestDoc {
 
 describe('useSignalDB', () => {
   let mockCollection: Partial<Collection<TestDoc>>;
-  let mockUseReactiveQuery: any;
-  let mockUseReactiveCount: any;
+  let mockUseReactiveQuery: vi.Mock;
+  let mockUseReactiveCount: vi.Mock;
 
   const mockData: TestDoc[] = [
     {
@@ -42,7 +42,7 @@ describe('useSignalDB', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     mockCollection = {
       findOne: vi.fn(),
       insert: vi.fn(),
@@ -52,7 +52,11 @@ describe('useSignalDB', () => {
       removeMany: vi.fn(),
     };
 
-    const { useReactiveQuery, useReactiveCount } = require('@signaldb/react');
+    const signaldbReact = await import('@signaldb/react');
+    const { useReactiveQuery, useReactiveCount } = signaldbReact as {
+      useReactiveQuery: vi.Mock;
+      useReactiveCount: vi.Mock;
+    };
     mockUseReactiveQuery = useReactiveQuery;
     mockUseReactiveCount = useReactiveCount;
 
@@ -179,11 +183,14 @@ describe('useSignalDB', () => {
     });
 
     expect(mockCollection.removeOne).toHaveBeenCalledWith({ id: '1' });
-    expect(mockCollection.removeMany).toHaveBeenCalledWith({ value: { $gt: 15 } });
+    expect(mockCollection.removeMany).toHaveBeenCalledWith({
+      value: { $gt: 15 },
+    });
   });
 
   it('should check document existence', () => {
-    mockCollection.findOne = vi.fn()
+    mockCollection.findOne = vi
+      .fn()
       .mockReturnValueOnce(mockData[0])
       .mockReturnValueOnce(null);
 
@@ -215,10 +222,7 @@ describe('useSignalDB', () => {
       options
     );
 
-    expect(mockUseReactiveCount).toHaveBeenCalledWith(
-      mockCollection,
-      selector
-    );
+    expect(mockUseReactiveCount).toHaveBeenCalledWith(mockCollection, selector);
   });
 
   it('should handle empty data gracefully', () => {
@@ -245,9 +249,9 @@ describe('useSignalDB', () => {
     );
 
     const firstRender = result.current;
-    
+
     rerender();
-    
+
     const secondRender = result.current;
 
     expect(firstRender.findOne).toBe(secondRender.findOne);

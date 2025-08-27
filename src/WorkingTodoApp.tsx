@@ -12,16 +12,16 @@ function WorkingTodoApp() {
   const [title, setTitle] = useState('');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
   const [isLoaded, setIsLoaded] = useState(false);
-  
+
   // Initialize todos from localStorage
   const [todos, setTodos] = useState<Todo[]>(() => {
     const stored = localStorage.getItem('working-todos');
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        return parsed.map((t: any) => ({
+        return parsed.map((t: Todo) => ({
           ...t,
-          createdAt: new Date(t.createdAt)
+          createdAt: new Date(t.createdAt),
         }));
       } catch (e) {
         console.error('Failed to parse stored todos:', e);
@@ -49,7 +49,7 @@ function WorkingTodoApp() {
         title: title.trim(),
         completed: false,
         priority,
-        createdAt: new Date()
+        createdAt: new Date(),
       };
       setTodos([...todos, newTodo]);
       setTitle('');
@@ -57,29 +57,31 @@ function WorkingTodoApp() {
   };
 
   const toggleTodo = (id: string) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
   };
 
   const deleteTodo = (id: string) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   const clearCompleted = () => {
-    setTodos(todos.filter(todo => !todo.completed));
+    setTodos(todos.filter((todo) => !todo.completed));
   };
 
   const stats = {
     total: todos.length,
-    completed: todos.filter(t => t.completed).length,
-    active: todos.filter(t => !t.completed).length
+    completed: todos.filter((t) => t.completed).length,
+    active: todos.filter((t) => !t.completed).length,
   };
 
   const priorityColors = {
     low: 'bg-gray-100 text-gray-600',
     medium: 'bg-yellow-100 text-yellow-700',
-    high: 'bg-red-100 text-red-700'
+    high: 'bg-red-100 text-red-700',
   };
 
   return (
@@ -95,22 +97,28 @@ function WorkingTodoApp() {
         <div className="bg-white rounded-xl shadow-md p-6 mb-6">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-gray-800">{stats.total}</div>
+              <div className="text-2xl font-bold text-gray-800">
+                {stats.total}
+              </div>
               <div className="text-sm text-gray-500">Total</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {stats.completed}
+              </div>
               <div className="text-sm text-gray-500">Completed</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-blue-600">{stats.active}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {stats.active}
+              </div>
               <div className="text-sm text-gray-500">Active</div>
             </div>
           </div>
           {stats.total > 0 && (
             <div className="mt-4">
               <div className="bg-gray-200 rounded-full h-2">
-                <div 
+                <div
                   className="bg-green-500 h-2 rounded-full transition-all"
                   style={{ width: `${(stats.completed / stats.total) * 100}%` }}
                 />
@@ -123,7 +131,10 @@ function WorkingTodoApp() {
         </div>
 
         {/* Add Todo Form */}
-        <form onSubmit={addTodo} className="bg-white rounded-xl shadow-md p-6 mb-6">
+        <form
+          onSubmit={addTodo}
+          className="bg-white rounded-xl shadow-md p-6 mb-6"
+        >
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -145,7 +156,9 @@ function WorkingTodoApp() {
                 </label>
                 <select
                   value={priority}
-                  onChange={(e) => setPriority(e.target.value as 'low' | 'medium' | 'high')}
+                  onChange={(e) =>
+                    setPriority(e.target.value as 'low' | 'medium' | 'high')
+                  }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="low">Low</option>
@@ -169,13 +182,18 @@ function WorkingTodoApp() {
             <div className="p-12 text-center">
               <div className="text-6xl mb-4">✨</div>
               <p className="text-gray-500 text-lg">No todos yet!</p>
-              <p className="text-gray-400 text-sm mt-2">Add your first task above</p>
+              <p className="text-gray-400 text-sm mt-2">
+                Add your first task above
+              </p>
             </div>
           ) : (
             <>
               <ul className="divide-y divide-gray-200">
                 {todos.map((todo) => (
-                  <li key={todo.id} className="p-4 hover:bg-gray-50 transition-colors">
+                  <li
+                    key={todo.id}
+                    className="p-4 hover:bg-gray-50 transition-colors"
+                  >
                     <div className="flex items-center gap-3">
                       <input
                         type="checkbox"
@@ -187,12 +205,16 @@ function WorkingTodoApp() {
                         <div className="flex items-center gap-2">
                           <span
                             className={`${
-                              todo.completed ? 'line-through text-gray-400' : 'text-gray-800'
+                              todo.completed
+                                ? 'line-through text-gray-400'
+                                : 'text-gray-800'
                             }`}
                           >
                             {todo.title}
                           </span>
-                          <span className={`px-2 py-1 text-xs rounded-full ${priorityColors[todo.priority]}`}>
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${priorityColors[todo.priority]}`}
+                          >
                             {todo.priority}
                           </span>
                         </div>
@@ -216,7 +238,8 @@ function WorkingTodoApp() {
                     onClick={clearCompleted}
                     className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
-                    Clear {stats.completed} completed item{stats.completed !== 1 ? 's' : ''}
+                    Clear {stats.completed} completed item
+                    {stats.completed !== 1 ? 's' : ''}
                   </button>
                 </div>
               )}

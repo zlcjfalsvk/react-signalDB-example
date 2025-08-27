@@ -32,7 +32,9 @@ export function TodoItem({
 }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(todo.title);
-  const [editDescription, setEditDescription] = useState(todo.description || '');
+  const [editDescription, setEditDescription] = useState(
+    todo.description || ''
+  );
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -65,8 +67,8 @@ export function TodoItem({
       return;
     }
 
-    const hasChanges = 
-      trimmedTitle !== todo.title || 
+    const hasChanges =
+      trimmedTitle !== todo.title ||
       trimmedDescription !== (todo.description || '');
 
     if (hasChanges) {
@@ -77,7 +79,14 @@ export function TodoItem({
     }
 
     setIsEditing(false);
-  }, [editTitle, editDescription, todo.title, todo.description, todo.id, onUpdate]);
+  }, [
+    editTitle,
+    editDescription,
+    todo.title,
+    todo.description,
+    todo.id,
+    onUpdate,
+  ]);
 
   const handleCancelEdit = useCallback(() => {
     setEditTitle(todo.title);
@@ -85,15 +94,18 @@ export function TodoItem({
     setIsEditing(false);
   }, [todo.title, todo.description]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSaveEdit();
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      handleCancelEdit();
-    }
-  }, [handleSaveEdit, handleCancelEdit]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSaveEdit();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        handleCancelEdit();
+      }
+    },
+    [handleSaveEdit, handleCancelEdit]
+  );
 
   const handleToggle = useCallback(() => {
     onToggle(todo.id);
@@ -119,14 +131,18 @@ export function TodoItem({
     return new Date(date).toLocaleDateString();
   };
 
-  const isOverdue = todo.dueDate && !todo.completed && todo.dueDate < new Date();
-  const isDueToday = todo.dueDate && 
+  const isOverdue =
+    todo.dueDate && !todo.completed && todo.dueDate < new Date();
+  const isDueToday =
+    todo.dueDate &&
     new Date(todo.dueDate).toDateString() === new Date().toDateString();
 
   return (
     <div
       className={`group relative bg-white border rounded-lg p-4 transition-all duration-200 ${
-        isSelected ? 'border-blue-500 shadow-md' : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+        isSelected
+          ? 'border-blue-500 shadow-md'
+          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
       } ${todo.completed ? 'opacity-75' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
@@ -136,7 +152,9 @@ export function TodoItem({
       onClick={handleSelect}
     >
       {/* Priority indicator */}
-      <div className={`absolute left-0 top-0 w-1 h-full rounded-l-lg ${PRIORITY_INDICATORS[todo.priority]}`} />
+      <div
+        className={`absolute left-0 top-0 w-1 h-full rounded-l-lg ${PRIORITY_INDICATORS[todo.priority]}`}
+      />
 
       <div className="flex items-start gap-3 ml-2">
         {/* Checkbox */}
@@ -192,7 +210,9 @@ export function TodoItem({
               {/* Title */}
               <h3
                 className={`text-sm font-medium cursor-pointer hover:text-blue-600 transition-colors ${
-                  todo.completed ? 'line-through text-gray-500' : 'text-gray-900'
+                  todo.completed
+                    ? 'line-through text-gray-500'
+                    : 'text-gray-900'
                 }`}
                 onDoubleClick={handleStartEdit}
               >
@@ -203,7 +223,9 @@ export function TodoItem({
               {todo.description && (
                 <p
                   className={`mt-1 text-sm cursor-pointer hover:text-blue-600 transition-colors ${
-                    todo.completed ? 'line-through text-gray-400' : 'text-gray-600'
+                    todo.completed
+                      ? 'line-through text-gray-400'
+                      : 'text-gray-600'
                   }`}
                   onDoubleClick={handleStartEdit}
                 >
@@ -214,7 +236,9 @@ export function TodoItem({
               {/* Meta information */}
               <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
                 {/* Priority badge */}
-                <span className={`px-2 py-1 rounded-full border ${PRIORITY_COLORS[todo.priority]}`}>
+                <span
+                  className={`px-2 py-1 rounded-full border ${PRIORITY_COLORS[todo.priority]}`}
+                >
                   {todo.priority}
                 </span>
 
@@ -225,11 +249,15 @@ export function TodoItem({
                       isOverdue
                         ? 'bg-red-100 text-red-800 border border-red-300'
                         : isDueToday
-                        ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                        : 'bg-gray-100 text-gray-700 border border-gray-300'
+                          ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                          : 'bg-gray-100 text-gray-700 border border-gray-300'
                     }`}
                   >
-                    {isOverdue ? '⚠️ Overdue' : isDueToday ? '📅 Due today' : `📅 ${formatDate(todo.dueDate)}`}
+                    {isOverdue
+                      ? '⚠️ Overdue'
+                      : isDueToday
+                        ? '📅 Due today'
+                        : `📅 ${formatDate(todo.dueDate)}`}
                   </span>
                 )}
 
@@ -247,9 +275,12 @@ export function TodoItem({
               {/* Timestamps */}
               <div className="mt-2 text-xs text-gray-400">
                 Created: {formatDate(todo.createdAt)}
-                {todo.updatedAt && todo.updatedAt.getTime() !== todo.createdAt.getTime() && (
-                  <span className="ml-2">Updated: {formatDate(todo.updatedAt)}</span>
-                )}
+                {todo.updatedAt &&
+                  todo.updatedAt.getTime() !== todo.createdAt.getTime() && (
+                    <span className="ml-2">
+                      Updated: {formatDate(todo.updatedAt)}
+                    </span>
+                  )}
               </div>
             </div>
           )}
@@ -257,15 +288,28 @@ export function TodoItem({
 
         {/* Actions */}
         {!isEditing && (isHovered || isSelected) && (
-          <div className="flex-shrink-0 flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="flex-shrink-0 flex items-center gap-1"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Edit button */}
             <button
               onClick={handleStartEdit}
               className="p-1 text-gray-400 hover:text-blue-600 rounded-full hover:bg-blue-50 focus:ring-2 focus:ring-blue-500 transition-colors"
               title="Edit todo (double-click on text also works)"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
               </svg>
             </button>
 
@@ -277,15 +321,33 @@ export function TodoItem({
                   ? 'text-red-600 bg-red-50 hover:bg-red-100'
                   : 'text-gray-400 hover:text-red-600 hover:bg-red-50'
               }`}
-              title={showConfirmDelete ? 'Click again to confirm delete' : 'Delete todo'}
+              title={
+                showConfirmDelete
+                  ? 'Click again to confirm delete'
+                  : 'Delete todo'
+              }
             >
               {showConfirmDelete ? (
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                 </svg>
               ) : (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
                 </svg>
               )}
             </button>

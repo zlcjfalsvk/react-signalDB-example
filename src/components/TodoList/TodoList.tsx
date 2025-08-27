@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+} from 'react';
 import { TodoItem } from '../TodoItem';
 import type { Todo, SortBy } from '../../types/todo';
 
@@ -44,7 +50,7 @@ export function TodoList({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [visibleRange, setVisibleRange] = useState({ start: 0, end: 0 });
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -90,55 +96,64 @@ export function TodoList({
   }, [todos.length, itemHeight, containerHeight, enableVirtualization]);
 
   // Handle sorting
-  const handleSort = useCallback((newSortBy: SortBy) => {
-    if (!onSort) return;
-    
-    const newDirection = 
-      sortBy === newSortBy && sortDirection === 'desc' ? 'asc' : 'desc';
-    onSort(newSortBy, newDirection);
-  }, [sortBy, sortDirection, onSort]);
+  const handleSort = useCallback(
+    (newSortBy: SortBy) => {
+      if (!onSort) return;
+
+      const newDirection =
+        sortBy === newSortBy && sortDirection === 'desc' ? 'asc' : 'desc';
+      onSort(newSortBy, newDirection);
+    },
+    [sortBy, sortDirection, onSort]
+  );
 
   // Selection handlers
-  const handleItemSelect = useCallback((id: string) => {
-    if (!isSelectionMode) return;
-    
-    setSelectedIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  }, [isSelectionMode]);
+  const handleItemSelect = useCallback(
+    (id: string) => {
+      if (!isSelectionMode) return;
+
+      setSelectedIds((prev) => {
+        const newSet = new Set(prev);
+        if (newSet.has(id)) {
+          newSet.delete(id);
+        } else {
+          newSet.add(id);
+        }
+        return newSet;
+      });
+    },
+    [isSelectionMode]
+  );
 
   const handleSelectAll = useCallback(() => {
     if (selectedIds.size === todos.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(todos.map(todo => todo.id)));
+      setSelectedIds(new Set(todos.map((todo) => todo.id)));
     }
   }, [todos, selectedIds.size]);
 
-  const handleBulkAction = useCallback((action: 'delete' | 'complete' | 'activate') => {
-    const ids = Array.from(selectedIds);
-    if (ids.length === 0) return;
+  const handleBulkAction = useCallback(
+    (action: 'delete' | 'complete' | 'activate') => {
+      const ids = Array.from(selectedIds);
+      if (ids.length === 0) return;
 
-    switch (action) {
-      case 'delete':
-        onBulkDelete?.(ids);
-        break;
-      case 'complete':
-        onBulkToggle?.(ids, true);
-        break;
-      case 'activate':
-        onBulkToggle?.(ids, false);
-        break;
-    }
+      switch (action) {
+        case 'delete':
+          onBulkDelete?.(ids);
+          break;
+        case 'complete':
+          onBulkToggle?.(ids, true);
+          break;
+        case 'activate':
+          onBulkToggle?.(ids, false);
+          break;
+      }
 
-    setSelectedIds(new Set());
-  }, [selectedIds, onBulkDelete, onBulkToggle]);
+      setSelectedIds(new Set());
+    },
+    [selectedIds, onBulkDelete, onBulkToggle]
+  );
 
   const clearSelection = useCallback(() => {
     setSelectedIds(new Set());
@@ -167,7 +182,7 @@ export function TodoList({
           <span className="text-sm text-gray-600">
             {todos.length} todo{todos.length !== 1 ? 's' : ''}
           </span>
-          
+
           {onSort && (
             <div className="flex items-center gap-2">
               <label className="text-sm text-gray-600">Sort by:</label>
@@ -176,15 +191,17 @@ export function TodoList({
                 onChange={(e) => handleSort(e.target.value as SortBy)}
                 className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                {SORT_OPTIONS.map(option => (
+                {SORT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
                 ))}
               </select>
-              
+
               <button
-                onClick={() => onSort(sortBy, sortDirection === 'asc' ? 'desc' : 'asc')}
+                onClick={() =>
+                  onSort(sortBy, sortDirection === 'asc' ? 'desc' : 'asc')
+                }
                 className="p-1 text-gray-400 hover:text-gray-600 focus:ring-2 focus:ring-blue-500 rounded"
                 title={`Sort ${sortDirection === 'asc' ? 'descending' : 'ascending'}`}
               >
@@ -202,12 +219,14 @@ export function TodoList({
                 <span className="text-sm text-gray-600">
                   {selectedIds.size} selected
                 </span>
-                
+
                 <button
                   onClick={handleSelectAll}
                   className="text-sm text-blue-600 hover:text-blue-800 focus:ring-2 focus:ring-blue-500 rounded px-2 py-1"
                 >
-                  {selectedIds.size === todos.length ? 'Deselect All' : 'Select All'}
+                  {selectedIds.size === todos.length
+                    ? 'Deselect All'
+                    : 'Select All'}
                 </button>
 
                 {selectedIds.size > 0 && (
@@ -218,14 +237,14 @@ export function TodoList({
                     >
                       Complete
                     </button>
-                    
+
                     <button
                       onClick={() => handleBulkAction('activate')}
                       className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
                     >
                       Activate
                     </button>
-                    
+
                     <button
                       onClick={() => handleBulkAction('delete')}
                       className="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 focus:ring-2 focus:ring-red-500"
@@ -278,10 +297,15 @@ export function TodoList({
                 className={`transition-all duration-200 ${
                   isSelectionMode ? 'cursor-pointer' : ''
                 }`}
-                style={enableVirtualization ? { 
-                  minHeight: itemHeight,
-                  marginBottom: index === itemsToRender.length - 1 ? 0 : 12 
-                } : undefined}
+                style={
+                  enableVirtualization
+                    ? {
+                        minHeight: itemHeight,
+                        marginBottom:
+                          index === itemsToRender.length - 1 ? 0 : 12,
+                      }
+                    : undefined
+                }
               >
                 <TodoItem
                   todo={todo}
@@ -298,12 +322,15 @@ export function TodoList({
       </div>
 
       {/* Virtual scrolling info (dev only) */}
-      {enableVirtualization && process.env.NODE_ENV === 'development' && todos.length > 50 && (
-        <div className="text-xs text-gray-400 text-center">
-          Showing {itemsToRender.length} of {todos.length} items 
-          (virtualized: {visibleRange.start + 1}-{Math.min(visibleRange.end + 1, todos.length)})
-        </div>
-      )}
+      {enableVirtualization &&
+        process.env.NODE_ENV === 'development' &&
+        todos.length > 50 && (
+          <div className="text-xs text-gray-400 text-center">
+            Showing {itemsToRender.length} of {todos.length} items (virtualized:{' '}
+            {visibleRange.start + 1}-
+            {Math.min(visibleRange.end + 1, todos.length)})
+          </div>
+        )}
     </div>
   );
 }

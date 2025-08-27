@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { TodoStats } from './TodoStats';
 import type { TodoStats as TodoStatsType, Priority } from '../../types/todo';
 
@@ -50,7 +50,9 @@ describe('TodoStats', () => {
     it('should not show detailed sections in compact mode', () => {
       render(<TodoStats {...defaultProps} compact={true} />);
 
-      expect(screen.queryByText('Priority Distribution')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Priority Distribution')
+      ).not.toBeInTheDocument();
       expect(screen.queryByText('Most Used Tags')).not.toBeInTheDocument();
     });
   });
@@ -60,11 +62,12 @@ describe('TodoStats', () => {
       render(<TodoStats {...defaultProps} />);
 
       expect(screen.getByText('Total Todos')).toBeInTheDocument();
-      expect(screen.getByText('Completed')).toBeInTheDocument();
+      expect(screen.getAllByText('Completed')[0]).toBeInTheDocument(); // Multiple instances - title and in description
       expect(screen.getByText('Active')).toBeInTheDocument();
       expect(screen.getByText('Added Today')).toBeInTheDocument();
 
-      expect(screen.getByText('10')).toBeInTheDocument();
+      // Check that the numbers are displayed (may appear multiple times)
+      expect(screen.getAllByText('10')[0]).toBeInTheDocument();
       expect(screen.getByText('6')).toBeInTheDocument();
       expect(screen.getByText('4')).toBeInTheDocument();
       expect(screen.getByText('2')).toBeInTheDocument();
@@ -75,7 +78,9 @@ describe('TodoStats', () => {
 
       expect(screen.getByText('1 overdue todo')).toBeInTheDocument();
       expect(screen.getByText('⚠️')).toBeInTheDocument();
-      expect(screen.getByText(/some todos have passed their due date/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/some todos have passed their due date/i)
+      ).toBeInTheDocument();
     });
 
     it('should show multiple overdue alert correctly', () => {
@@ -130,8 +135,14 @@ describe('TodoStats', () => {
 
     it('should limit top tags to 5', () => {
       const manyTagStats = {
-        tag1: 10, tag2: 9, tag3: 8, tag4: 7, tag5: 6,
-        tag6: 5, tag7: 4, tag8: 3,
+        tag1: 10,
+        tag2: 9,
+        tag3: 8,
+        tag4: 7,
+        tag5: 6,
+        tag6: 5,
+        tag7: 4,
+        tag8: 3,
       };
 
       render(<TodoStats {...defaultProps} tagStats={manyTagStats} />);
@@ -159,7 +170,9 @@ describe('TodoStats', () => {
     it('should not show charts when showCharts is false', () => {
       render(<TodoStats {...defaultProps} showCharts={false} />);
 
-      expect(screen.queryByText('Priority Distribution')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Priority Distribution')
+      ).not.toBeInTheDocument();
       expect(screen.queryByText('Completion Progress')).not.toBeInTheDocument();
     });
   });
@@ -206,7 +219,11 @@ describe('TodoStats', () => {
     it('should show completion rate insight', () => {
       render(<TodoStats {...defaultProps} />);
 
-      expect(screen.getByText(/60.0% completion rate/i)).toBeInTheDocument();
+      // The completion rate appears in the description of the StatCard
+      const completionRateElements = screen.getAllByText(
+        /60.0% completion rate/i
+      );
+      expect(completionRateElements.length).toBeGreaterThan(0);
     });
 
     it('should show overdue items warning when present', () => {
@@ -223,7 +240,9 @@ describe('TodoStats', () => {
 
       render(<TodoStats {...defaultProps} stats={lowCompletionStats} />);
 
-      expect(screen.getByText(/focus on completing existing todos/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/focus on completing existing todos/i)
+      ).toBeInTheDocument();
     });
 
     it('should show task breakdown recommendation for high priority items', () => {
@@ -235,13 +254,17 @@ describe('TodoStats', () => {
 
       render(<TodoStats {...defaultProps} priorityStats={highPriorityStats} />);
 
-      expect(screen.getByText(/consider breaking down high-priority tasks/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/consider breaking down high-priority tasks/i)
+      ).toBeInTheDocument();
     });
 
     it('should show overdue recommendation when overdue todos exist', () => {
       render(<TodoStats {...defaultProps} />);
 
-      expect(screen.getByText(/review and update overdue todos/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/review and update overdue todos/i)
+      ).toBeInTheDocument();
     });
 
     it('should show celebration message when all todos are completed', () => {
@@ -254,7 +277,9 @@ describe('TodoStats', () => {
 
       render(<TodoStats {...defaultProps} stats={allCompletedStats} />);
 
-      expect(screen.getByText(/great job! all todos completed!/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/great job! all todos completed!/i)
+      ).toBeInTheDocument();
     });
   });
 
@@ -276,14 +301,17 @@ describe('TodoStats', () => {
       };
 
       render(
-        <TodoStats 
-          stats={emptyStats} 
-          priorityStats={emptyPriorityStats} 
-          tagStats={{}} 
-          showCharts={true} 
+        <TodoStats
+          stats={emptyStats}
+          priorityStats={emptyPriorityStats}
+          tagStats={{}}
+          showCharts={true}
         />
       );
 
+      // When stats.total is 0, the DonutChart shows "No data"
+      // The DonutChart is rendered within the Priority Distribution section
+      expect(screen.getByText('Priority Distribution')).toBeInTheDocument();
       expect(screen.getByText('No data')).toBeInTheDocument();
     });
 
