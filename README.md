@@ -1,13 +1,13 @@
 # SignalDB React Todo App
 
-A modern, feature-rich Todo application built with React, TypeScript, and SignalDB. This application demonstrates the power of reactive data management with SignalDB while providing a comprehensive todo management experience.
+A modern, feature-rich Todo application built with React, TypeScript, and [SignalDB](https://signaldb.js.org). This application demonstrates the power of reactive data management with SignalDB while providing a comprehensive todo management experience.
 
 ## 🚀 Features
 
 ### Core Functionality
 - ✅ **Full CRUD Operations** - Create, read, update, and delete todos with ease
 - 📝 **Rich Todo Items** - Support for title, description, priority, tags, and due dates
-- 🔄 **Real-time Updates** - Reactive UI updates powered by SignalDB
+- 🔄 **Real-time Updates** - Reactive UI updates powered by [SignalDB](https://signaldb.js.org)
 - 💾 **Local Persistence** - All data saved to localStorage automatically
 - 🎯 **Smart Validation** - Comprehensive form validation with helpful error messages
 
