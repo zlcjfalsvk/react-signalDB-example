@@ -16,8 +16,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@maverick-js/signals": "^6.0.0",
     "@signaldb/core": "^1.7.1",
     "@signaldb/localstorage": "^1.0.1",
+    "@signaldb/maverickjs": "^1.0.0",
     "@signaldb/react": "^1.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

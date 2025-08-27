@@ -1,26 +1,28 @@
-import { Collection } from '@signaldb/core';
-import localStorageAdapter from '@signaldb/localstorage';
+import { Collection, createIndex } from '@signaldb/core';
+import createLocalStorageAdapter from '@signaldb/localstorage';
 import { createUseReactivityHook } from '@signaldb/react';
 import type { Todo } from '../types/todo';
+import maverickjsReactivityAdapter from '@signaldb/maverickjs';
+import { effect } from '@maverick-js/signals';
 
 // Create the useReactivity hook
-export const useReactivity = createUseReactivityHook();
+export const useReactivity = createUseReactivityHook(effect);
 
 // Create the todos collection
 export const todosCollection = new Collection<Todo>({
   name: 'todos',
-  primaryKey: 'id',
-  memory: localStorageAdapter('todos'),
+  reactivity: maverickjsReactivityAdapter,
+  persistence: createLocalStorageAdapter('todos'),
+  indices: [
+    createIndex('priority'),
+    createIndex('completed'),
+    createIndex('createdAt'),
+    createIndex('dueDate'),
+    createIndex('tags'),
+  ],
 });
 
-// Initialize indexes for better query performance
-todosCollection.createIndex({ priority: 1 });
-todosCollection.createIndex({ completed: 1 });
-todosCollection.createIndex({ createdAt: -1 });
-todosCollection.createIndex({ dueDate: 1 });
-todosCollection.createIndex({ tags: 1 });
-
-// Migration logic for version management
+// Migration logic for version management`
 const STORAGE_VERSION_KEY = 'todos_db_version';
 const CURRENT_VERSION = 1;
 
