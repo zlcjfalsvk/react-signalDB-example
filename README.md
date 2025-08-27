@@ -29,7 +29,7 @@ A modern, feature-rich Todo application built with React, TypeScript, and [Signa
 ## 🛠️ Tech Stack
 
 - **Frontend Framework**: React 18 with TypeScript
-- **Database**: SignalDB (reactive database)
+- **Database**: [SignalDB](https://signaldb.js.org) (reactive database)
 - **State Management**: React Hooks + SignalDB reactivity
 - **Styling**: Tailwind CSS with custom components
 - **Build Tool**: Vite
