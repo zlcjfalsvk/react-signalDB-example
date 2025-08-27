@@ -190,7 +190,10 @@ describe('TodoFilter', () => {
       const user = userEvent.setup();
       render(<TodoFilter {...defaultProps} filters={{ priority: 'high' }} />);
 
-      const prioritySelect = screen.getByDisplayValue('high');
+      // Get select element by its current value (which should be 'high')
+      const prioritySelect = screen.getByRole('combobox');
+      expect(prioritySelect).toHaveValue('high');
+      
       await user.selectOptions(prioritySelect, '');
 
       expect(mockHandlers.onFiltersChange).toHaveBeenCalledWith({
@@ -207,11 +210,14 @@ describe('TodoFilter', () => {
       const dateRangeButton = screen.getByText(/select date range/i);
       await user.click(dateRangeButton);
 
-      // Date inputs are rendered with labels but may not have proper for/id associations
+      // Date inputs are rendered with labels
       expect(screen.getByText('From')).toBeInTheDocument();
       expect(screen.getByText('To')).toBeInTheDocument();
-      const inputs = screen.getAllByRole('textbox');
-      expect(inputs.length).toBeGreaterThanOrEqual(2);
+      
+      // Date inputs have type="date"
+      const dateInputs = screen.getAllByDisplayValue('');
+      const dateTypeInputs = dateInputs.filter(input => input.getAttribute('type') === 'date');
+      expect(dateTypeInputs.length).toBe(2);
     });
 
     it('should call onFiltersChange when start date is set', async () => {
@@ -300,14 +306,10 @@ describe('TodoFilter', () => {
         <TodoFilter {...defaultProps} filters={{ tags: ['work', 'urgent'] }} />
       );
 
-      // Find the work tag badge and its close button
-      const workBadges = screen.getAllByText('#work');
-      const tagBadge = workBadges.find((el) =>
-        el.className.includes('bg-blue-100')
-      );
-      if (!tagBadge) throw new Error('Tag badge not found');
-      const closeButton = tagBadge.nextSibling as HTMLButtonElement;
-      await user.click(closeButton);
+      // Find the close button by its title attribute for the work tag
+      const closeButtons = screen.getAllByTitle('Remove tag filter');
+      // The first button should be for 'work' tag (as tags are rendered in order)
+      await user.click(closeButtons[0]);
 
       expect(mockHandlers.onFiltersChange).toHaveBeenCalledWith({
         tags: ['urgent'],

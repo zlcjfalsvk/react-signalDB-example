@@ -340,10 +340,13 @@ describe('TodoForm', () => {
     render(<TodoForm {...defaultProps} />);
 
     await user.type(screen.getByLabelText(/title/i), 'Test Todo');
-    await user.type(
-      screen.getByLabelText(/description/i),
-      'Description{ctrl}{enter}'
-    );
+    
+    const descriptionTextarea = screen.getByLabelText(/description/i);
+    await user.type(descriptionTextarea, 'Description');
+    
+    // Focus the textarea and simulate Ctrl+Enter 
+    descriptionTextarea.focus();
+    await user.keyboard('{Control>}{Enter}{/Control}');
 
     await waitFor(() => {
       expect(mockOnSubmit).toHaveBeenCalled();

@@ -231,6 +231,12 @@ export function TodoForm({
             value={formData.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
             onBlur={() => handleBlur('description')}
+            onKeyDown={(e) => {
+              if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                handleSubmit(e as any);
+              }
+            }}
             rows={3}
             className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
               touched.description && errors.description

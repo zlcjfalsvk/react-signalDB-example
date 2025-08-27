@@ -3,10 +3,35 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Collection } from '@signaldb/core';
 import { useSignalDB } from './useSignalDB';
 
-// Mock SignalDB modules
-vi.mock('@signaldb/react', () => ({
-  useReactiveQuery: vi.fn(),
-  useReactiveCount: vi.fn(),
+// Mock useReactivity from db module
+vi.mock('../lib/db', () => ({
+  useReactivity: vi.fn(),
+}));
+
+vi.mock('@signaldb/localstorage', () => ({
+  default: vi.fn(() => ({
+    get: vi.fn(),
+    set: vi.fn(),
+    remove: vi.fn(),
+  })),
+}));
+
+vi.mock('@signaldb/core', () => ({
+  Collection: vi.fn().mockImplementation(() => ({
+    find: vi.fn(() => ({
+      toArray: vi.fn(() => []),
+      onChange: vi.fn(() => () => {}),
+    })),
+    findOne: vi.fn(),
+    insert: vi.fn(),
+    insertOne: vi.fn(),
+    updateOne: vi.fn(),
+    updateMany: vi.fn(),
+    removeOne: vi.fn(),
+    removeMany: vi.fn(),
+    createIndex: vi.fn(),
+    memory: vi.fn(() => []),
+  })),
 }));
 
 // Mock data type for testing
@@ -20,8 +45,7 @@ interface TestDoc {
 
 describe('useSignalDB', () => {
   let mockCollection: Partial<Collection<TestDoc>>;
-  let mockUseReactiveQuery: vi.Mock;
-  let mockUseReactiveCount: vi.Mock;
+  let mockUseReactivity: vi.Mock;
 
   const mockData: TestDoc[] = [
     {
@@ -40,10 +64,14 @@ describe('useSignalDB', () => {
     },
   ];
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
 
     mockCollection = {
+      find: vi.fn(() => ({
+        fetch: vi.fn(() => mockData),
+        count: vi.fn(() => mockData.length),
+      })),
       findOne: vi.fn(),
       insert: vi.fn(),
       updateOne: vi.fn(),
@@ -52,21 +80,11 @@ describe('useSignalDB', () => {
       removeMany: vi.fn(),
     };
 
-    const signaldbReact = await import('@signaldb/react');
-    const { useReactiveQuery, useReactiveCount } = signaldbReact as {
-      useReactiveQuery: vi.Mock;
-      useReactiveCount: vi.Mock;
-    };
-    mockUseReactiveQuery = useReactiveQuery;
-    mockUseReactiveCount = useReactiveCount;
-
-    mockUseReactiveQuery.mockReturnValue({
-      data: mockData,
-      isLoading: false,
-      refresh: vi.fn(),
-    });
-
-    mockUseReactiveCount.mockReturnValue(mockData.length);
+    const dbModule = await import('../lib/db');
+    mockUseReactivity = dbModule.useReactivity as unknown as vi.Mock;
+    
+    // Mock useReactivity to call the function passed to it and return its result
+    mockUseReactivity.mockImplementation((fn) => fn());
   });
 
   it('should return correct data and count', () => {
@@ -81,12 +99,11 @@ describe('useSignalDB', () => {
     expect(result.current.isLoading).toBe(false);
   });
 
-  it('should handle loading state', () => {
-    mockUseReactiveQuery.mockReturnValue({
-      data: [],
-      isLoading: true,
-      refresh: vi.fn(),
-    });
+  it('should handle empty collection', () => {
+    mockCollection.find = vi.fn(() => ({
+      fetch: vi.fn(() => []),
+      count: vi.fn(() => 0),
+    }));
 
     const { result } = renderHook(() =>
       useSignalDB({
@@ -94,7 +111,7 @@ describe('useSignalDB', () => {
       })
     );
 
-    expect(result.current.isLoading).toBe(true);
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual([]);
   });
 
@@ -204,7 +221,7 @@ describe('useSignalDB', () => {
     expect(result.current.exists({ id: 'nonexistent' })).toBe(false);
   });
 
-  it('should pass correct options to useReactiveQuery', () => {
+  it('should pass correct options to collection methods', () => {
     const selector = { value: { $gt: 10 } };
     const options = { sort: { createdAt: -1 }, limit: 10 };
 
@@ -216,21 +233,12 @@ describe('useSignalDB', () => {
       })
     );
 
-    expect(mockUseReactiveQuery).toHaveBeenCalledWith(
-      mockCollection,
-      selector,
-      options
-    );
-
-    expect(mockUseReactiveCount).toHaveBeenCalledWith(mockCollection, selector);
+    expect(mockCollection.find).toHaveBeenCalledWith(selector, options);
+    expect(mockCollection.find).toHaveBeenCalledWith(selector);
   });
 
   it('should handle empty data gracefully', () => {
-    mockUseReactiveQuery.mockReturnValue({
-      data: null,
-      isLoading: false,
-      refresh: vi.fn(),
-    });
+    mockUseReactivity.mockImplementation(() => null);
 
     const { result } = renderHook(() =>
       useSignalDB({

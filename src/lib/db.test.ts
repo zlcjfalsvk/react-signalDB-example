@@ -1,6 +1,80 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { todosCollection, initializeDatabase } from './db';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { Todo } from '../types/todo';
+
+// Mock the SignalDB modules before importing db
+vi.mock('@signaldb/core', () => ({
+  Collection: vi.fn().mockImplementation((options) => {
+    const storage = new Map();
+    return {
+      name: options.name,
+      insert: vi.fn((doc) => {
+        storage.set(doc.id, doc);
+        return doc;
+      }),
+      insertOne: vi.fn((doc) => {
+        storage.set(doc.id, doc);
+        return doc;
+      }),
+      findOne: vi.fn((selector) => {
+        if (selector.id) {
+          return storage.get(selector.id) || null;
+        }
+        return Array.from(storage.values())[0] || null;
+      }),
+      find: vi.fn(() => ({
+        toArray: vi.fn(() => Array.from(storage.values())),
+        onChange: vi.fn((callback) => {
+          return () => {};
+        }),
+      })),
+      updateOne: vi.fn((selector, update) => {
+        const doc = storage.get(selector.id);
+        if (doc && update.$set) {
+          const updated = { ...doc, ...update.$set };
+          storage.set(selector.id, updated);
+        }
+        return 1;
+      }),
+      remove: vi.fn((selector) => {
+        if (selector && selector.id) {
+          storage.delete(selector.id);
+        } else {
+          storage.clear();
+        }
+        return 1;
+      }),
+      createIndex: vi.fn(),
+      memory: vi.fn(() => Array.from(storage.values())),
+    };
+  }),
+}));
+
+vi.mock('@signaldb/localstorage', () => ({
+  default: vi.fn(() => ({
+    get: vi.fn(),
+    set: vi.fn(),
+    remove: vi.fn(),
+  })),
+  createLocalStorageAdapter: vi.fn(() => ({
+    get: vi.fn(),
+    set: vi.fn(),
+    remove: vi.fn(),
+  })),
+}));
+
+vi.mock('@signaldb/react', () => ({
+  createReactivityAdapter: vi.fn(() => ({
+    create: vi.fn(),
+    update: vi.fn(),
+    remove: vi.fn(),
+  })),
+  createUseReactivityHook: vi.fn(() => vi.fn()),
+  useReactiveQuery: vi.fn(() => []),
+  useReactiveCount: vi.fn(() => 0),
+}));
+
+// Now import the module after mocks are set up
+const { todosCollection, initializeDatabase } = await import('./db');
 
 describe('SignalDB Collection', () => {
   beforeEach(() => {
