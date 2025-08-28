@@ -64,10 +64,6 @@ npm run dev
 npm run dev          # Start development server
 npm run build        # Build for production
 npm run preview      # Preview production build
-npm run test         # Run unit tests
-npm run test:ui      # Run tests with UI
-npm run test:coverage # Generate test coverage report
-npm run test:e2e     # Run end-to-end tests
 npm run lint         # Run ESLint
 npm run format       # Format code with Prettier
 npm run type-check   # Run TypeScript type checking
