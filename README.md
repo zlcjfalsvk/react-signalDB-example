@@ -257,3 +257,5 @@ For issues, questions, or suggestions:
 ---
 
 Built with ❤️ using SignalDB and React
+
+*This Project was created with the assistance of Claude AI by Anthropic*
