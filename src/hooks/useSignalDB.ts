@@ -1,41 +1,48 @@
 import { useCallback } from 'react';
-import type { Collection } from '@signaldb/core';
+import type {
+  Collection,
+  BaseItem,
+  SortSpecifier,
+  Selector,
+  Modifier,
+} from '@signaldb/core';
+
 import { useReactivity } from '../lib/db';
 
-export interface UseSignalDBOptions<T> {
+export interface UseSignalDBOptions<T extends BaseItem> {
   collection: Collection<T>;
-  selector?: object;
+  selector?: Selector<T>;
   options?: {
-    sort?: object;
+    sort?: SortSpecifier<T>;
     limit?: number;
     skip?: number;
   };
 }
 
-export interface UseSignalDBReturn<T> {
+export interface UseSignalDBReturn<T extends BaseItem> {
   // Data access
   data: T[];
   count: number;
   isLoading: boolean;
 
   // CRUD operations
-  findOne: (selector: object) => T | null;
+  findOne: (selector: Selector<T>) => T | undefined;
   insert: (doc: Omit<T, 'id'>) => string;
-  updateOne: (selector: object, update: Partial<T>) => number;
-  updateMany: (selector: object, update: Partial<T>) => number;
-  removeOne: (selector: object) => number;
-  removeMany: (selector: object) => number;
+  updateOne: (selector: Selector<T>, update: Partial<T>) => number;
+  updateMany: (selector: Selector<T>, update: Partial<T>) => number;
+  removeOne: (selector: Selector<T>) => number;
+  removeMany: (selector: Selector<T>) => number;
 
   // Utilities
   refresh: () => void;
-  exists: (selector: object) => boolean;
+  exists: (selector: Selector<T>) => boolean;
 }
 
 /**
  * Generic hook for interacting with SignalDB collections
  * Provides reactive data access and common CRUD operations
  */
-export function useSignalDB<T extends { id: string }>({
+export function useSignalDB<T extends BaseItem>({
   collection,
   selector = {},
   options = {},
@@ -57,7 +64,7 @@ export function useSignalDB<T extends { id: string }>({
 
   // CRUD operations
   const findOne = useCallback(
-    (findSelector: object): T | null => {
+    (findSelector: Selector<T>): T | undefined => {
       return collection.findOne(findSelector);
     },
     [collection]
@@ -74,44 +81,52 @@ export function useSignalDB<T extends { id: string }>({
   );
 
   const updateOne = useCallback(
-    (updateSelector: object, update: Partial<T>): number => {
-      const updateDoc = {
+    (updateSelector: Selector<T>, update: Partial<T>): number => {
+      // Add updatedAt field if it exists in the type
+      const updateWithTimestamp = {
         ...update,
-        updatedAt: new Date(),
-      };
-      return collection.updateOne(updateSelector, { $set: updateDoc });
+        ...('updatedAt' in update || !update ? { updatedAt: new Date() } : {}),
+      } as Partial<T>;
+
+      return collection.updateOne(updateSelector, {
+        $set: updateWithTimestamp,
+      } as Modifier<T>);
     },
     [collection]
   );
 
   const updateMany = useCallback(
-    (updateSelector: object, update: Partial<T>): number => {
-      const updateDoc = {
+    (updateSelector: Selector<T>, update: Partial<T>): number => {
+      // Add updatedAt field if it exists in the type
+      const updateWithTimestamp = {
         ...update,
-        updatedAt: new Date(),
-      };
-      return collection.updateMany(updateSelector, { $set: updateDoc });
+        ...('updatedAt' in update || !update ? { updatedAt: new Date() } : {}),
+      } as Partial<T>;
+
+      return collection.updateMany(updateSelector, {
+        $set: updateWithTimestamp,
+      } as Modifier<T>);
     },
     [collection]
   );
 
   const removeOne = useCallback(
-    (removeSelector: object): number => {
+    (removeSelector: Selector<T>): number => {
       return collection.removeOne(removeSelector);
     },
     [collection]
   );
 
   const removeMany = useCallback(
-    (removeSelector: object): number => {
+    (removeSelector: Selector<T>): number => {
       return collection.removeMany(removeSelector);
     },
     [collection]
   );
 
   const exists = useCallback(
-    (existsSelector: object): boolean => {
-      return collection.findOne(existsSelector) !== null;
+    (existsSelector: Selector<T>): boolean => {
+      return collection.findOne(existsSelector) !== undefined;
     },
     [collection]
   );
