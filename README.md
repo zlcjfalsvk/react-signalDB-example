@@ -4,7 +4,6 @@ A modern, feature-rich Todo application built with React, TypeScript, and [Signa
 
 ## 📹 Demo
 
-https://github.com/user-attachments/assets/example.mov
 
 ## 🚀 Features
 
