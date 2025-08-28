@@ -2,6 +2,10 @@
 
 A modern, feature-rich Todo application built with React, TypeScript, and [SignalDB](https://signaldb.js.org). This application demonstrates the power of reactive data management with SignalDB while providing a comprehensive todo management experience.
 
+## 📹 Demo
+
+https://github.com/user-attachments/assets/example.mov
+
 ## 🚀 Features
 
 ### Core Functionality
