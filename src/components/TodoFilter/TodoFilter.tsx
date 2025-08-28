@@ -40,7 +40,7 @@ export function TodoFilter({
   const [showDateRange, setShowDateRange] = useState(false);
   const [isExpanded, setIsExpanded] = useState(!compact);
 
-  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const tagDropdownRef = useRef<HTMLDivElement>(null);
 
   // Handle search input with debouncing
