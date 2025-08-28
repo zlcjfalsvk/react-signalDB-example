@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  useCallback,
-  useMemo,
-  useRef,
-  useEffect,
-} from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+
 import type { FilterOptions, FilterStatus, Priority } from '../../types/todo';
 
 interface TodoFilterProps {

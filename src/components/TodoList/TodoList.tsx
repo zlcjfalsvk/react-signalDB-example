@@ -5,8 +5,10 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
-import { TodoItem } from '../TodoItem';
+
 import type { Todo, SortBy } from '../../types/todo';
+
+import { TodoItem } from '../TodoItem';
 
 interface TodoListProps {
   todos: Todo[];

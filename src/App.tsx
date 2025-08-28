@@ -1,8 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
-import { useTodos } from './hooks';
-import { TodoList, TodoForm, TodoFilter, TodoStats } from './components';
 
 import type { FilterOptions, SortBy, Todo } from './types/todo';
+
+import { useTodos } from './hooks';
+import { TodoList, TodoForm, TodoFilter, TodoStats } from './components';
 
 type ViewMode = 'list' | 'stats' | 'add';
 
