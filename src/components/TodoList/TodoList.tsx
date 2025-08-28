@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useRef,
-  useEffect,
-} from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 
 import type { Todo, SortBy } from '../../types/todo';
 
