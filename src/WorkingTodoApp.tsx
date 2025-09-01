@@ -51,7 +51,7 @@ function WorkingTodoApp() {
         priority,
         createdAt: new Date(),
       };
-      setTodos([...todos, newTodo]);
+      setTodos(prevTodos => sortTodos([...prevTodos, newTodo]));
       setTitle('');
     }
   };
@@ -83,6 +83,28 @@ function WorkingTodoApp() {
     medium: 'bg-yellow-100 text-yellow-700',
     high: 'bg-red-100 text-red-700',
   };
+
+  // Sort todos by: Priority (High->Low) -> Created Date (Desc) -> Title (ASC)
+  const sortTodos = (todosToSort: Todo[]): Todo[] => {
+    return [...todosToSort].sort((a, b) => {
+      // First sort by priority (high -> low)
+      const priorityOrder = { high: 3, medium: 2, low: 1 };
+      const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+      if (priorityDiff !== 0) return priorityDiff;
+      
+      // Then sort by created date (desc - newest first)
+      const aTime = a.createdAt.getTime();
+      const bTime = b.createdAt.getTime();
+      const dateDiff = bTime - aTime;
+      if (dateDiff !== 0) return dateDiff;
+      
+      // Finally sort by title (asc)
+      return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+    });
+  };
+
+  // Apply sorting to todos for display
+  const sortedTodos = sortTodos(todos);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -189,7 +211,7 @@ function WorkingTodoApp() {
           ) : (
             <>
               <ul className="divide-y divide-gray-200">
-                {todos.map((todo) => (
+                {sortedTodos.map((todo) => (
                   <li
                     key={todo.id}
                     className="p-4 hover:bg-gray-50 transition-colors"
