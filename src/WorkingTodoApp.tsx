@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Collection } from '@signaldb/core';
+import createLocalStorageAdapter from '@signaldb/localstorage';
+import { createUseReactivityHook } from '@signaldb/react';
+import { effect } from '@maverick-js/signals';
+import maverickjsReactivityAdapter from '@signaldb/maverickjs';
 
 interface Todo {
   id: string;
@@ -8,38 +13,34 @@ interface Todo {
   createdAt: Date;
 }
 
+// Create useReactivity hook for React integration
+const useReactivity = createUseReactivityHook(effect);
+
+// Create SignalDB collection for todos with localStorage persistence
+const todosCollection = new Collection<Todo>({ 
+  name: 'todos',
+  reactivity: maverickjsReactivityAdapter,
+  persistence: createLocalStorageAdapter('working-todos', {
+    serialize: (items) => JSON.stringify(items.map(item => ({
+      ...item,
+      createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : item.createdAt
+    }))),
+    deserialize: (itemsString) => {
+      const parsed = JSON.parse(itemsString);
+      return parsed.map((item: Todo) => ({
+        ...item,
+        createdAt: new Date(item.createdAt)
+      }));
+    },
+  })
+});
+
 function WorkingTodoApp() {
   const [title, setTitle] = useState('');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
-  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Initialize todos from localStorage
-  const [todos, setTodos] = useState<Todo[]>(() => {
-    const stored = localStorage.getItem('working-todos');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        return parsed.map((t: Todo) => ({
-          ...t,
-          createdAt: new Date(t.createdAt),
-        }));
-      } catch (e) {
-        console.error('Failed to parse stored todos:', e);
-        return [];
-      }
-    }
-    return [];
-  });
-
-  // Save todos to localStorage whenever they change (but skip initial load)
-  useEffect(() => {
-    if (!isLoaded) {
-      setIsLoaded(true);
-      return;
-    }
-    localStorage.setItem('working-todos', JSON.stringify(todos));
-    console.log('Saved todos to localStorage:', todos.length);
-  }, [todos, isLoaded]);
+  // Get todos from SignalDB collection with reactivity
+  const todos = useReactivity(() => todosCollection.find({}).fetch(), []);
 
   const addTodo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,25 +52,24 @@ function WorkingTodoApp() {
         priority,
         createdAt: new Date(),
       };
-      setTodos(prevTodos => sortTodos([...prevTodos, newTodo]));
+      todosCollection.insert(newTodo);
       setTitle('');
     }
   };
 
   const toggleTodo = (id: string) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+    const todo = todosCollection.findOne({ id });
+    if (todo) {
+      todosCollection.updateOne({ id }, { $set: { completed: !todo.completed } });
+    }
   };
 
   const deleteTodo = (id: string) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+    todosCollection.removeOne({ id });
   };
 
   const clearCompleted = () => {
-    setTodos(todos.filter((todo) => !todo.completed));
+    todosCollection.removeMany({ completed: true });
   };
 
   const stats = {
@@ -93,8 +93,10 @@ function WorkingTodoApp() {
       if (priorityDiff !== 0) return priorityDiff;
       
       // Then sort by created date (desc - newest first)
-      const aTime = a.createdAt.getTime();
-      const bTime = b.createdAt.getTime();
+      const aDate = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
+      const bDate = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
+      const aTime = aDate.getTime();
+      const bTime = bDate.getTime();
       const dateDiff = bTime - aTime;
       if (dateDiff !== 0) return dateDiff;
       
@@ -241,7 +243,7 @@ function WorkingTodoApp() {
                           </span>
                         </div>
                         <div className="text-xs text-gray-400 mt-1">
-                          {todo.createdAt.toLocaleDateString()}
+                          {todo.createdAt instanceof Date ? todo.createdAt.toLocaleDateString() : new Date(todo.createdAt).toLocaleDateString()}
                         </div>
                       </div>
                       <button
