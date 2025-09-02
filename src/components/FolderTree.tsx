@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronRight, ChevronDown, Folder, FolderOpen, Edit2, Trash2, Plus } from 'lucide-react';
+import { ChevronRight, ChevronDown, Folder, FolderOpen, Edit2, Trash2, Plus, X } from 'lucide-react';
 import { createUseReactivityHook } from '@signaldb/react';
 import { effect } from '@maverick-js/signals';
 
@@ -258,9 +258,10 @@ const FolderTreeItem: React.FC<FolderTreeItemProps> = ({
 interface FolderTreeProps {
   onSelectFolder: (folderId: string) => void;
   selectedFolderId: string | null;
+  onClose?: () => void;
 }
 
-export const FolderTree: React.FC<FolderTreeProps> = ({ onSelectFolder, selectedFolderId }) => {
+export const FolderTree: React.FC<FolderTreeProps> = ({ onSelectFolder, selectedFolderId, onClose }) => {
   const [newFolderName, setNewFolderName] = useState('');
   const [showNewFolder, setShowNewFolder] = useState(false);
 
@@ -288,12 +289,22 @@ export const FolderTree: React.FC<FolderTreeProps> = ({ onSelectFolder, selected
       <div className="p-3 border-b">
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-semibold">Folders</h3>
-          <button
-            onClick={() => setShowNewFolder(!showNewFolder)}
-            className="p-1 hover:bg-gray-100 rounded"
-          >
-            <Plus size={18} />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setShowNewFolder(!showNewFolder)}
+              className="p-1 hover:bg-gray-100 rounded"
+            >
+              <Plus size={18} />
+            </button>
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="p-1 hover:bg-gray-100 rounded"
+              >
+                <X size={18} />
+              </button>
+            )}
+          </div>
         </div>
         
         {showNewFolder && (

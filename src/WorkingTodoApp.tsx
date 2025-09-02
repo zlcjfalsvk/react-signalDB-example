@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createUseReactivityHook } from '@signaldb/react';
 import { effect } from '@maverick-js/signals';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 import { Todo } from './types/folder';
 import { todosCollection, foldersCollection } from './db/collections';
@@ -115,6 +115,7 @@ function WorkingTodoApp() {
             <FolderTree
               onSelectFolder={setSelectedFolderId}
               selectedFolderId={selectedFolderId}
+              onClose={() => setShowFolderTree(false)}
             />
           </div>
         )}
@@ -122,12 +123,14 @@ function WorkingTodoApp() {
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto relative">
           {/* Hamburger Menu - Fixed position at top-left */}
-          <button
-            onClick={() => setShowFolderTree(!showFolderTree)}
-            className="absolute top-4 left-4 z-10 p-2 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
-          >
-            {showFolderTree ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {!showFolderTree && (
+            <button
+              onClick={() => setShowFolderTree(true)}
+              className="absolute top-4 left-4 z-10 p-2 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+            >
+              <Menu size={20} />
+            </button>
+          )}
           
           <div className="max-w-3xl mx-auto p-4 pt-16">
             {/* Header */}
